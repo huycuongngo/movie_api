@@ -1,11 +1,10 @@
 const express = require('express');
 const userRoute = express.Router();
 const {
-  getUserTypeList,
+  getUserType,
   getUserList,
   getUserListPagination,
-  getUser,
-  getUserPagination,
+  getUserById,
   logIn,
   signUp,
   getAccountInfo,
@@ -17,11 +16,10 @@ const {
 
 
 // GET
-userRoute.get("/LayDanhSachLoaiNguoiDung", getUserTypeList);
+userRoute.get("/LayDanhSachLoaiNguoiDung", getUserType);
 userRoute.get("/LayDanhSachNguoiDung", getUserList)
 userRoute.get("/LayDanhSachNguoiDungPhanTrang", getUserListPagination)
-userRoute.get("/TimKiemNguoiDung", getUser)
-userRoute.get("/TimKiemNguoiDungPhanTrang", getUserPagination)
+userRoute.get("/TimKiemNguoiDung/:id", getUserById)
 
 // POST
 userRoute.post("/DangNhap", logIn)

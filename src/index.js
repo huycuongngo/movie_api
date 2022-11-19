@@ -10,3 +10,6 @@ app.use("/api", rootRoute)
 app.listen(port, () => {
   console.log(`server running on ${port}`)
 })
+
+
+// sequelize-auto -h localhost -d movie -u root -x 1234 -p 3307 --dialect mysql -o "./src/model" -l es6
