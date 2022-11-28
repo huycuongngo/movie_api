@@ -229,9 +229,9 @@ const updateUserInfo = async (req, res) => {
     let bearerToken = req.headers.authorization;
     let auth = bearerToken.replace("Bearer ", "");
     let { data } = decodeToken(auth);
-    console.log("xacthucbearer", data);
+    // console.log("xacthucbearer", data);
     let { tai_khoan } = data;
-    console.log(tai_khoan);
+    // console.log(tai_khoan);
 
     let { ho_ten, email, so_dt, mat_khau, loai_nguoi_dung } = req.body
     let userUpdate = {
@@ -242,7 +242,7 @@ const updateUserInfo = async (req, res) => {
       mat_khau,
       loai_nguoi_dung,
     }
-    console.log("userUpdate", userUpdate);
+    // console.log("userUpdate", userUpdate);
 
     let checkEmailUser = await model.NguoiDung.findAll({
       where: {
@@ -250,7 +250,7 @@ const updateUserInfo = async (req, res) => {
       },
     })
     
-    console.log("checkEmailUser", checkEmailUser[0])
+    // console.log("checkEmailUser", checkEmailUser[0])
   
     if (checkEmailUser[0]) {
       failCode(res, "", `Email đã bị trùng!`)
@@ -260,11 +260,11 @@ const updateUserInfo = async (req, res) => {
           so_dt,
         },
       })
-      console.log("checkSDTUser", checkSDTUser[0])
+      // console.log("checkSDTUser", checkSDTUser[0])
       if (checkSDTUser[0]) {
         failCode(res, "", `SDT đã bị trùng!`)
       } else {
-          let result = await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
+          await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
           successCode(res, userUpdate)
       }
     }
@@ -278,8 +278,29 @@ const updateUserInfo = async (req, res) => {
 // DELETE
 const deleteUser = async (req, res) => {
   try {
-    // let id = 
-    res.send("deleter user")
+    let bearerToken = req.headers.authorization;
+    let auth = bearerToken.replace("Bearer ", "");
+    let { data } = decodeToken(auth);
+    console.log("xacthucbearer delete user", data);
+    let { tai_khoan } = data;
+    // console.log(tai_khoan);
+    let checkUser = await model.NguoiDung.findAll({
+      where: {
+        tai_khoan
+      }
+    })
+    // console.log("checkUser delete", checkUser[0])
+    if (checkUser[0]) {
+      let result = await model.NguoiDung.destroy({
+        where: {
+          tai_khoan
+        }
+      })
+      successCode(res, result)
+    } else {
+      failCode(res, "", "Xóa thất bại! Người dùng không tồn tại")
+    }
+
   } catch (error) {
     console.log(error)
     errorCode(res)
