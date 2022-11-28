@@ -120,7 +120,7 @@ const getAccountInfo = async (req, res) => {
     let { data } = decodeToken(auth);
     let { tai_khoan } = data;
     let nguoiDungDatVe = await model.NguoiDung.findAll({
-      include: "thong_tin_dat_ve"
+      include: "DatVes"
     });
     let index = nguoiDungDatVe.findIndex(item => item.tai_khoan === tai_khoan)
     successCode(res, nguoiDungDatVe[index])
@@ -139,23 +139,29 @@ const getUserInfo = async (req, res) => {
     let datve = await model.NguoiDung.findAll({
       include: [{
         model: model.DatVe,
-        as: "thong_tin_dat_ve",
+        as: "DatVes",
         include: [
           {
             model: model.LichChieu,
-            as: "maLichChieu",
+            as: "ma_lich_chieu_LichChieu",
             include: [
               {
                 model: model.Phim,
-                as: "maPhim"
+                as: "ma_phim_Phim"
               },
               {
                 model: model.RapPhim,
-                as: "maRap",
+                as: "ma_rap_RapPhim",
                 include: [
                   {
                     model: model.CumRap,
-                    as: "maCumRap"
+                    as: "ma_cum_rap_CumRap",
+                    include: [
+                      {
+                        model: model.HeThongRap,
+                        as: "ma_he_thong_rap_HeThongRap"
+                      }
+                    ]
                   }
                 ]
               }
@@ -163,7 +169,7 @@ const getUserInfo = async (req, res) => {
           },
           {
             model: model.Ghe,
-            as: "danhSachGhe"
+            as: "Ghes"
           }
         ]
       }]
@@ -217,14 +223,13 @@ const addUser = async (req, res) => {
   }
 }
 
-
 // PUT, token bearer lấy từ addUser để xác định tài khoản nào cần update trong db
 const updateUserInfo = async (req, res) => {
   try {
     let bearerToken = req.headers.authorization;
     let auth = bearerToken.replace("Bearer ", "");
     let { data } = decodeToken(auth);
-    console.log(data);
+    console.log("xacthucbearer", data);
     let { tai_khoan } = data;
     console.log(tai_khoan);
 
@@ -237,46 +242,37 @@ const updateUserInfo = async (req, res) => {
       mat_khau,
       loai_nguoi_dung,
     }
-    console.log("user", userUpdate);
+    console.log("userUpdate", userUpdate);
 
-    let checkUser = await model.NguoiDung.findAll({
+    let checkEmailUser = await model.NguoiDung.findAll({
       where: {
         email,
-        so_dt
       },
     })
-
-    console.log("checkUser", checkUser[0])
-    // let taiKhoanCheck = checkUser[0].dataValues.tai_khoan
-    // case update chính nó
-    // if (taiKhoanCheck === tai_khoan) {
-      
-    // } else {
-    //   failCode(res, "", `Email, sdt đã bị trùng với User stt ${taiKhoanCheck}`);
-    // }
-    // if (checkUser[0]) {
-    //   failCode(res, "", "Email, số điện thoại đã tồn tại!")
-    // } else {
-    //   let result = await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
-    //   console.log("result", result)
-    // }
-
-    // let result = await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
-    // console.log("result", result)
-
-
-    // let id = 
-    // if (checkUser[0]) {
-    //   // failCode(res, "", "")
-    // }
-    // res.send("put user")
-    res.send("put")
+    
+    console.log("checkEmailUser", checkEmailUser[0])
+  
+    if (checkEmailUser[0]) {
+      failCode(res, "", `Email đã bị trùng!`)
+    } else {
+      let checkSDTUser = await model.NguoiDung.findAll({
+        where: {
+          so_dt,
+        },
+      })
+      console.log("checkSDTUser", checkSDTUser[0])
+      if (checkSDTUser[0]) {
+        failCode(res, "", `SDT đã bị trùng!`)
+      } else {
+          let result = await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
+          successCode(res, userUpdate)
+      }
+    }
   } catch (error) {
     console.log(error)
-    // errorCode(res)
+    errorCode(res)
   }
 }
-
 
 // admin moi xoa duoc nguoi dung
 // DELETE
