@@ -15,11 +15,23 @@ const failCode = (res, data, message) => {
 }
 
 const errorCode = (res) => {
-  res.status(500).send("Server Error")
+  res.status(500).json({
+    statusCode: '500',
+    message: "Server Error"
+  })
+}
+
+const emailError = (res, err) => {
+  let message = err.message
+  res.send({
+    statusCode: '500',
+    message
+  })
 }
 
 module.exports = {
   successCode,
   failCode,
-  errorCode
+  errorCode,
+  emailError
 }

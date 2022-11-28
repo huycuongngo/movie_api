@@ -22,8 +22,8 @@ function initModels(sequelize) {
 
   RapPhim.belongsTo(CumRap, { as: "ma_cum_rap_CumRap", foreignKey: "ma_cum_rap"});
   CumRap.hasMany(RapPhim, { as: "RapPhims", foreignKey: "ma_cum_rap"});
-  DatVe.belongsTo(Ghe, { as: "ma_ghe_Ghe", foreignKey: "ma_ghe"});
-  Ghe.hasMany(DatVe, { as: "DatVes", foreignKey: "ma_ghe"});
+  Ghe.belongsTo(DatVe, { as: "ma_ve_DatVe", foreignKey: "ma_ve"});
+  DatVe.hasMany(Ghe, { as: "Ghes", foreignKey: "ma_ve"});
   CumRap.belongsTo(HeThongRap, { as: "ma_he_thong_rap_HeThongRap", foreignKey: "ma_he_thong_rap"});
   HeThongRap.hasMany(CumRap, { as: "CumRaps", foreignKey: "ma_he_thong_rap"});
   DatVe.belongsTo(LichChieu, { as: "ma_lich_chieu_LichChieu", foreignKey: "ma_lich_chieu"});

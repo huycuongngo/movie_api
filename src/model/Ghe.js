@@ -6,6 +6,14 @@ module.exports = (sequelize, DataTypes) => {
 class Ghe extends Sequelize.Model {
   static init(sequelize, DataTypes) {
   return super.init({
+    ma_ve: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'DatVe',
+        key: 'ma_ve'
+      }
+    },
     ma_rap: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -39,6 +47,13 @@ class Ghe extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "ma_ghe" },
+        ]
+      },
+      {
+        name: "ma_ve",
+        using: "BTREE",
+        fields: [
+          { name: "ma_ve" },
         ]
       },
       {

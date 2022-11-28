@@ -18,12 +18,7 @@ class NguoiDung extends Sequelize.Model {
     },
     email: {
       type: DataTypes.STRING(255),
-      allowNull: false,
-      validate: {
-        isEmail: {
-          msg: "email sai dinh dang"
-        }
-      }
+      allowNull: true
     },
     so_dt: {
       type: DataTypes.STRING(255),
@@ -31,7 +26,7 @@ class NguoiDung extends Sequelize.Model {
     },
     mat_khau: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     loai_nguoi_dung: {
       type: DataTypes.STRING(255),
@@ -48,6 +43,15 @@ class NguoiDung extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "tai_khoan" },
+        ]
+      },
+      {
+        name: "UC_NguoiDung",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "email" },
+          { name: "so_dt" },
         ]
       },
     ]

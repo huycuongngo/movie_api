@@ -1,3 +1,4 @@
+const { checkTokenInAPI } = require('../middleware/auth')
 const express = require('express');
 const userRoute = express.Router();
 const {
@@ -24,14 +25,16 @@ userRoute.get("/TimKiemNguoiDung/:id", getUserById)
 // POST
 userRoute.post("/DangNhap", logIn)
 userRoute.post("/DangKy", signUp)
-userRoute.post("/ThongTinTaiKhoan", getAccountInfo)
-userRoute.post("/LayThongTinNguoiDung", getUserInfo)
-userRoute.post("/ThemNguoiDung", addUser)
+userRoute.post("/ThongTinTaiKhoan", checkTokenInAPI, getAccountInfo)
+userRoute.post("/LayThongTinNguoiDung", checkTokenInAPI, getUserInfo)
+userRoute.post("/ThemNguoiDung", checkTokenInAPI, addUser)
 
 // PUT
-userRoute.put("/CapNhatThongTinNguoiDung", updateUserInfo)
+userRoute.put("/CapNhatThongTinNguoiDung", checkTokenInAPI, updateUserInfo)
 
 // DELETE
-userRoute.delete("/XoaNguoiDung", deleteUser)
+userRoute.delete("/XoaNguoiDung", checkTokenInAPI, deleteUser)
 
 module.exports = userRoute;
+
+

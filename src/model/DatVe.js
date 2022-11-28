@@ -22,19 +22,25 @@ class DatVe extends Sequelize.Model {
         key: 'ma_lich_chieu'
       }
     },
-    ma_ghe: {
+    ma_ve: {
+      autoIncrement: true,
       type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'Ghe',
-        key: 'ma_ghe'
-      }
+      allowNull: false,
+      primaryKey: true
     }
   }, {
     sequelize,
     tableName: 'DatVe',
     timestamps: false,
     indexes: [
+      {
+        name: "PRIMARY",
+        unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "ma_ve" },
+        ]
+      },
       {
         name: "tai_khoan",
         using: "BTREE",
@@ -47,13 +53,6 @@ class DatVe extends Sequelize.Model {
         using: "BTREE",
         fields: [
           { name: "ma_lich_chieu" },
-        ]
-      },
-      {
-        name: "ma_ghe",
-        using: "BTREE",
-        fields: [
-          { name: "ma_ghe" },
         ]
       },
     ]
