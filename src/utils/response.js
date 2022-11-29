@@ -23,8 +23,8 @@ const errorCode = (res) => {
 
 const emailError = (res, err) => {
   let message = err.message
-  res.send({
-    statusCode: '500',
+  res.status(400).json({
+    statusCode: '400',
     message
   })
 }

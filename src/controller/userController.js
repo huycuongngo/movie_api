@@ -34,14 +34,12 @@ const getUserList = async (req, res) => {
 const getUserListPagination = async (req, res) => {
   try {
     let { currentPageId, pageSize } = req.body;
+    let userList = await model.NguoiDung.findAll()
+    let totalCount = userList.length
+    let totalPages = Math.ceil(totalCount/pageSize)
     let result = await model.NguoiDung.findAll({ offset: currentPageId * pageSize - pageSize, limit: pageSize })
-    res.send({
-      statusCode: 200,
-      message: "Xử lý thành công!",
-      currentPageId,
-      pageSize,
-      content: result
-    })
+    let count = result.length
+    successCode(res, { currentPageId, count, totalPages, totalCount, result });
   } catch (error) {
     console.log(error)
     errorCode(res)

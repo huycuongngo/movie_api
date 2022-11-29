@@ -7,10 +7,13 @@ const {
   getMovieListPagination,
   getMovieListDate,
   getMovie,
-  addMovie,
-  updateMovie,
-  uploadMovieImage,
-  deleteMovie
+
+  addMovieWithImage,
+
+  updateMovieWithImage,
+  updateMovieWithVideo,
+
+  deleteMovie,
 } = require('../controller/movieController')
 
 // GET
@@ -21,9 +24,11 @@ movieRoute.use("/LayDanhSachPhimTheoNgay", getMovieListDate)
 movieRoute.use("/LayThongTinPhim", getMovie)
 
 // POST
-movieRoute.post("/ThemPhimUploadHinh", addMovie)
-movieRoute.post("/CapNhatPhimUpload", updateMovie)
-movieRoute.post("", uploadMovieImage)
+movieRoute.post("/ThemPhimUploadHinh", addMovieWithImage)
+
+// PUT
+movieRoute.put("/CapNhatPhimUploadImage", updateMovieWithImage)
+movieRoute.put("/CapNhatPhimUploadVideo", updateMovieWithVideo)
 
 // DELETE
 movieRoute.delete("/XoaPhim", deleteMovie)
