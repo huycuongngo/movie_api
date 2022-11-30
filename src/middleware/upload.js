@@ -1,8 +1,11 @@
 const multer = require('multer');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // nơi lưu file upload trong source server
-    cb(null, './public/img')
+    if (file.fieldname === "image")
+      cb(null, './public/img')
+    else
+      cb(null, './public/video')
   },
   filename: (req, file, cb) => {
     const newFileName = Date.now() + '_' + file.originalname
@@ -10,6 +13,30 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage })
+const fileFilter = (req, file, cb) => {
+  if (file.fieldname === "image") {
+    if (
+      file.mimetype === 'image/png' ||
+      file.mimetype === 'image/jpg' ||
+      file.mimetype === 'image/gif'
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  } else {
+    if (file.mimetype === 'video/mp4')
+      cb(null, true)
+    else
+      cb(null, false)
+  }
+};
 
-module.exports = upload;
+const upload = multer({ storage, fileFilter }).fields([
+  { name: 'image', maxCount: 1 },
+  {name: 'video', maxCount: 1},
+])
+
+module.exports = {
+  upload,
+};

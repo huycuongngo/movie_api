@@ -227,10 +227,7 @@ const updateUserInfo = async (req, res) => {
     let bearerToken = req.headers.authorization;
     let auth = bearerToken.replace("Bearer ", "");
     let { data } = decodeToken(auth);
-    // console.log("xacthucbearer", data);
     let { tai_khoan } = data;
-    // console.log(tai_khoan);
-
     let { ho_ten, email, so_dt, mat_khau, loai_nguoi_dung } = req.body
     let userUpdate = {
       tai_khoan,
@@ -240,16 +237,11 @@ const updateUserInfo = async (req, res) => {
       mat_khau,
       loai_nguoi_dung,
     }
-    // console.log("userUpdate", userUpdate);
-
     let checkEmailUser = await model.NguoiDung.findAll({
       where: {
         email,
       },
     })
-    
-    // console.log("checkEmailUser", checkEmailUser[0])
-  
     if (checkEmailUser[0]) {
       failCode(res, "", `Email đã bị trùng!`)
     } else {
@@ -258,7 +250,6 @@ const updateUserInfo = async (req, res) => {
           so_dt,
         },
       })
-      // console.log("checkSDTUser", checkSDTUser[0])
       if (checkSDTUser[0]) {
         failCode(res, "", `SDT đã bị trùng!`)
       } else {
@@ -272,7 +263,6 @@ const updateUserInfo = async (req, res) => {
   }
 }
 
-// admin moi xoa duoc nguoi dung
 // DELETE
 const deleteUser = async (req, res) => {
   try {
@@ -281,13 +271,11 @@ const deleteUser = async (req, res) => {
     let { data } = decodeToken(auth);
     console.log("xacthucbearer delete user", data);
     let { tai_khoan } = data;
-    // console.log(tai_khoan);
     let checkUser = await model.NguoiDung.findAll({
       where: {
         tai_khoan
       }
     })
-    // console.log("checkUser delete", checkUser[0])
     if (checkUser[0]) {
       let result = await model.NguoiDung.destroy({
         where: {

@@ -18,6 +18,7 @@ const getBannerList = async (req, res) => {
     errorCode(res)
   }
 }
+
 const getMovieList = async (req, res) => {
   try {
     let movieList = await model.Phim.findAll()
@@ -27,6 +28,7 @@ const getMovieList = async (req, res) => {
     errorCode(res)
   }
 }
+
 const getMovieListPagination = async (req, res) => {
   try {
     let { currentPageId, pageSize } = req.body;
@@ -41,6 +43,7 @@ const getMovieListPagination = async (req, res) => {
     errorCode(res)
   }
 }
+
 const getMovieListDate = async (req, res) => {
   try {
     let { currentPageId, pageSize, startDate, endDate } = req.body;
@@ -65,38 +68,61 @@ const getMovieListDate = async (req, res) => {
     errorCode(res)
   }
 }
+
 const getMovie = async (req, res) => {
   try {
-
-
-    res.send("oki getmovie")
+    let { maPhim } = req.params;
+    let checkMovie = await model.Phim.findByPk(maPhim)
+    if (checkMovie) {
+      successCode(res, checkMovie)
+    } else {
+      failCode(res, "", "Mã phim không tồn tại!")
+    }
   } catch (error) {
-
+    console.log(error)
+    errorCode(res)
   }
 }
 
 // POST
 const addMovieWithImage = async (req, res) => {
   try {
-
+    let checkImage = req.files.image;
+    let checkVideo = req.files.video;
+    if (checkImage && checkVideo) {
+      let { ten_phim, mo_ta, ngay_khoi_chieu, danh_gia, hot, dang_chieu, sap_chieu } = req.body
+      let trailer = req.files.video[0].path
+      let hinh_anh = req.files.image[0].path
+      let newMovie = {
+        ma_phim: 0,
+        ten_phim,
+        trailer,
+        hinh_anh,
+        mo_ta,
+        ngay_khoi_chieu,
+        danh_gia,
+        hot,
+        dang_chieu,
+        sap_chieu
+      }
+      let result = await model.Phim.create(newMovie);
+      successCode(res, result)
+    } else {
+      failCode(res, "", "Hình ảnh *.jpg, *.png, *.gif.   Video *.mp4 !")
+    }
   } catch (error) {
-
+    console.log(error)
+    errorCode(error)
   }
 }
 
-const updateMovieWithImage = async (req, res) => {
+// PUT
+const updateMovie = async (req, res) => {
   try {
 
   } catch (error) {
-
-  }
-}
-
-const updateMovieWithVideo = async (req, res) => {
-  try {
-
-  } catch (error) {
-
+    console.log(error)
+    errorCode(error)
   }
 }
 
@@ -118,8 +144,7 @@ module.exports = {
 
   addMovieWithImage,
 
-  updateMovieWithImage,
-  updateMovieWithVideo,
+  updateMovie,
 
   deleteMovie,
 }

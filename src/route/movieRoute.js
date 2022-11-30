@@ -1,5 +1,6 @@
 const express = require('express');
 const movieRoute = express.Router();
+const { upload } = require('../middleware/upload')
 
 const {
   getBannerList,
@@ -10,25 +11,23 @@ const {
 
   addMovieWithImage,
 
-  updateMovieWithImage,
-  updateMovieWithVideo,
+  updateMovie,
 
   deleteMovie,
 } = require('../controller/movieController')
 
 // GET
-movieRoute.use("/LayDanhSachBanner", getBannerList)
-movieRoute.use("/LayDanhSachPhim", getMovieList)
-movieRoute.use("/LayDanhSachPhimPhanTrang", getMovieListPagination)
-movieRoute.use("/LayDanhSachPhimTheoNgay", getMovieListDate)
-movieRoute.use("/LayThongTinPhim", getMovie)
+movieRoute.get("/LayDanhSachBanner", getBannerList)
+movieRoute.get("/LayDanhSachPhim", getMovieList)
+movieRoute.get("/LayDanhSachPhimPhanTrang", getMovieListPagination)
+movieRoute.get("/LayDanhSachPhimTheoNgay", getMovieListDate)
+movieRoute.get("/LayThongTinPhim/:maPhim", getMovie)
 
 // POST
-movieRoute.post("/ThemPhimUploadHinh", addMovieWithImage)
+movieRoute.post("/ThemPhimUploadHinh", upload, addMovieWithImage)
 
 // PUT
-movieRoute.put("/CapNhatPhimUploadImage", updateMovieWithImage)
-movieRoute.put("/CapNhatPhimUploadVideo", updateMovieWithVideo)
+movieRoute.put("/CapNhatPhimUploadImage/:ma_phim", upload, updateMovie)
 
 // DELETE
 movieRoute.delete("/XoaPhim", deleteMovie)
