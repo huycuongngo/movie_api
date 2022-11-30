@@ -85,30 +85,40 @@ const getMovie = async (req, res) => {
 }
 
 // POST
-const addMovieWithImage = async (req, res) => {
+const addMovie = async (req, res) => {
   try {
-    let checkImage = req.files.image;
-    let checkVideo = req.files.video;
-    if (checkImage && checkVideo) {
-      let { ten_phim, mo_ta, ngay_khoi_chieu, danh_gia, hot, dang_chieu, sap_chieu } = req.body
-      let trailer = req.files.video[0].path
-      let hinh_anh = req.files.image[0].path
-      let newMovie = {
-        ma_phim: 0,
-        ten_phim,
-        trailer,
-        hinh_anh,
-        mo_ta,
-        ngay_khoi_chieu,
-        danh_gia,
-        hot,
-        dang_chieu,
-        sap_chieu
+    let { ten_phim, mo_ta, ngay_khoi_chieu, danh_gia, hot, dang_chieu, sap_chieu } = req.body
+    let checkTenPhim = await model.Phim.findAll({
+      where: {
+        ten_phim
       }
-      let result = await model.Phim.create(newMovie);
-      successCode(res, result)
+    })
+    if (checkTenPhim[0]) {
+      failCode(res, "", "Tên phim không được trùng!")
     } else {
-      failCode(res, "", "Hình ảnh *.jpg, *.png, *.gif.   Video *.mp4 !")
+      let checkImage = req.files.image;
+      let checkVideo = req.files.video;
+      if (checkImage && checkVideo) {
+        let trailer = req.files.video[0].path
+        let hinh_anh = req.files.image[0].path
+        let newMovie = {
+          ma_phim: 0,
+          ten_phim,
+          trailer,
+          hinh_anh,
+          mo_ta,
+          ngay_khoi_chieu,
+          danh_gia,
+          hot,
+          dang_chieu,
+          sap_chieu
+        }
+        let result = await model.Phim.create(newMovie);
+        successCode(res, result)
+      }
+      else {
+        failCode(res, "", "Hình ảnh *.jpg, *.png, *.gif.   Video *.mp4 !")
+      }
     }
   } catch (error) {
     console.log(error)
@@ -117,9 +127,54 @@ const addMovieWithImage = async (req, res) => {
 }
 
 // PUT
+// check ma phim
+// check ten phim
+// check 2 file
 const updateMovie = async (req, res) => {
   try {
-
+    let { ma_phim } = req.params;
+    let checkMovie = await model.Phim.findByPk(ma_phim)
+    if (checkMovie) {
+      let { ten_phim, mo_ta, ngay_khoi_chieu, danh_gia, hot, dang_chieu, sap_chieu } = req.body
+      let checkTenPhim = await model.Phim.findAll({
+        where: {
+          ten_phim
+        }
+      })
+      if (checkTenPhim[0]) {
+        failCode(res, "", "Tên phim không được trùng!")
+      } else {
+        let checkImage = req.files.image;
+        let checkVideo = req.files.video;
+        if (checkImage && checkVideo) {
+          let trailer = req.files.video[0].path
+          let hinh_anh = req.files.image[0].path
+          let updateMovie = {
+            ma_phim,
+            ten_phim,
+            trailer,
+            hinh_anh,
+            mo_ta,
+            ngay_khoi_chieu,
+            danh_gia,
+            hot,
+            dang_chieu,
+            sap_chieu
+          }
+          let result = await model.Phim.update(updateMovie, {
+            where: {
+              ma_phim
+            }
+          })
+          successCode(res, result)
+        }
+        else {
+          failCode(res, "", "Hình ảnh *.jpg, *.png, *.gif.   Video *.mp4 !")
+        }
+      }
+    } else {
+      failCode(res, "", "Mã phim không tồn tại!")
+    }
   } catch (error) {
     console.log(error)
     errorCode(error)
@@ -129,9 +184,21 @@ const updateMovie = async (req, res) => {
 // DELETE
 const deleteMovie = async (req, res) => {
   try {
-
+    let { ma_phim } = req.params
+    let checkMovie = await model.Phim.findByPk(ma_phim)
+    if (checkMovie) {
+      let result = await model.Phim.destroy({
+        where: {
+          ma_phim
+        }
+      })
+      successCode(res, result)
+    } else {
+      failCode(res, "", "Mã phim không tồn tại!")
+    }
   } catch (error) {
-
+    console.log(error)
+    errorCode(error)
   }
 }
 
@@ -142,7 +209,7 @@ module.exports = {
   getMovieListDate,
   getMovie,
 
-  addMovieWithImage,
+  addMovie,
 
   updateMovie,
 

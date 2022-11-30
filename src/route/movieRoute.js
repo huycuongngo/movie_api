@@ -1,6 +1,7 @@
 const express = require('express');
 const movieRoute = express.Router();
 const { upload } = require('../middleware/upload')
+const { checkTokenInAPI } = require('../middleware/auth')
 
 const {
   getBannerList,
@@ -9,7 +10,7 @@ const {
   getMovieListDate,
   getMovie,
 
-  addMovieWithImage,
+  addMovie,
 
   updateMovie,
 
@@ -24,12 +25,12 @@ movieRoute.get("/LayDanhSachPhimTheoNgay", getMovieListDate)
 movieRoute.get("/LayThongTinPhim/:maPhim", getMovie)
 
 // POST
-movieRoute.post("/ThemPhimUploadHinh", upload, addMovieWithImage)
+movieRoute.post("/ThemPhim", upload, addMovie)
 
 // PUT
-movieRoute.put("/CapNhatPhimUploadImage/:ma_phim", upload, updateMovie)
+movieRoute.put("/CapNhatPhim/:ma_phim", checkTokenInAPI, upload, updateMovie)
 
 // DELETE
-movieRoute.delete("/XoaPhim", deleteMovie)
+movieRoute.delete("/XoaPhim/:ma_phim", deleteMovie)
 
 module.exports = movieRoute;
