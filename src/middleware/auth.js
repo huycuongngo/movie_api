@@ -1,4 +1,9 @@
 const jwt = require('jsonwebtoken');
+const { successCode, failCode, errorCode } = require('../utils/response')
+const sequelize = require('../model/modelConnectDb');
+const initModel = require('../model/init-models')
+
+const model = initModel(sequelize)
 
 const encodeToken = (data) => {
   return jwt.sign({ data }, "KEY", { expiresIn: '10d' });
@@ -28,9 +33,26 @@ const checkTokenInAPI = (req, res, next) => {
   }
 }
 
+// const checkTenPhim = (req, res, next) => {
+//   try {
+//     // console.log(req)
+//     // let checkTenPhim = await model.Phim.findAll({
+//     //   where: {
+//     //     ten_phim
+//     //   }
+//     // })
+//     // console.log("checkTenPhim", checkTenPhim)
+//     next()
+//   } catch (error) {
+//     errorCode(res, error)
+//   }
+//   //return();
+// }
+
+
 module.exports = {
   encodeToken,
   checkToken,
   decodeToken,
-  checkTokenInAPI
+  checkTokenInAPI,
 }

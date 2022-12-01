@@ -31,6 +31,6 @@ movieRoute.post("/ThemPhim", upload, addMovie)
 movieRoute.put("/CapNhatPhim/:ma_phim", checkTokenInAPI, upload, updateMovie)
 
 // DELETE
-movieRoute.delete("/XoaPhim/:ma_phim", deleteMovie)
+movieRoute.delete("/XoaPhim/:ma_phim",checkTokenInAPI, deleteMovie)
 
 module.exports = movieRoute;

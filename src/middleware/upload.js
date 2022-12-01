@@ -8,19 +8,12 @@ const storage = multer.diskStorage({
       cb(null, './public/video')
   },
   filename: (req, file, cb) => {
-
-    // console.log("fliename", req);
-
     const newFileName = Date.now() + '_' + file.originalname
     cb(null, newFileName)
   }
 })
 
 const fileFilter = (req, file, cb) => {
-
-  // console.log("fileFilter", req)
-
-
   if (file.fieldname === "image") {
     if (
       file.mimetype === 'image/png' ||
@@ -41,7 +34,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter }).fields([
   { name: 'image', maxCount: 1 },
-  {name: 'video', maxCount: 1},
+  { name: 'video', maxCount: 1 },
 ])
 
 module.exports = {

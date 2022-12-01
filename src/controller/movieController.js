@@ -2,9 +2,9 @@ const { successCode, failCode, errorCode } = require('../utils/response');
 const _ = require('lodash');
 const sequelize = require('../model/modelConnectDb');
 const initModel = require('../model/init-models');
-const { encodeToken, decodeToken } = require('../middleware/auth');
 const { validateDate, convertDate } = require('../utils/date');
 const { paginate } = require('../utils/involveObject');
+const { upload } = require('../middleware/upload');
 
 const model = initModel(sequelize);
 
@@ -122,7 +122,7 @@ const addMovie = async (req, res) => {
     }
   } catch (error) {
     console.log(error)
-    errorCode(error)
+    errorCode(res)
   }
 }
 
@@ -177,7 +177,7 @@ const updateMovie = async (req, res) => {
     }
   } catch (error) {
     console.log(error)
-    errorCode(error)
+    errorCode(res)
   }
 }
 
@@ -198,7 +198,7 @@ const deleteMovie = async (req, res) => {
     }
   } catch (error) {
     console.log(error)
-    errorCode(error)
+    errorCode(res)
   }
 }
 

@@ -14,7 +14,8 @@ const failCode = (res, data, message) => {
   })
 }
 
-const errorCode = (res) => {
+const errorCode = (res, error) => {
+  console.log(error)
   res.status(500).json({
     statusCode: '500',
     message: "Server Error"
