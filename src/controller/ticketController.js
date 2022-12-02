@@ -3,6 +3,7 @@ const sequelize = require('../model/modelConnectDb');
 const initModel = require('../model/init-models');
 const { decodeToken } = require('../middleware/auth');
 const { checkMaGhe } = require('../utils/checkMaGhe');
+const { validateDate, convertDate, validateHour } = require('../utils/date')
 
 const model = initModel(sequelize);
 
@@ -94,24 +95,52 @@ const purchaseTicket = async (req, res) => {
 
 // check mã rạp
 // check mã phim
-// validate ngay_gio_chieu
+// check formate ngay_gio_chieu
+// check trùng ngày giờ chiếu
 const createMovieSchedule = async (req, res) => {
   try {
-
-    let { ma_rap, ma_phim, ngay_gio_chieu, gia_ve } = req.body
-    console.log({ ma_rap, ma_phim, ngay_gio_chieu, gia_ve })
+    let { ma_rap, ma_phim, ngay_chieu, gio_chieu, gia_ve } = req.body
+    console.log({ ma_rap, ma_phim, ngay_chieu, gio_chieu, gia_ve })
     let checkMaRap = await model.RapPhim.findByPk(ma_rap)
-    if (checkMaRap) {
-      let checkMaPhim = await model.Phim.findByPk(ma_phim)
-      if (checkMaPhim) {
-        
-      } else {
-        failCode(res, "", "Mã phim không tồn tại")
-      }
+    let checkMaPhim = await model.Phim.findByPk(ma_phim)
+
+    let checkDate = validateDate(ngay_chieu);
+    console.log(checkDate)
+
+    let checkHour = validateHour(gio_chieu)
+    console.log("checkHour", checkHour);
+
+    // nếu như có mã rap thì hợp lệ, nếu không có thì lỗi ko tồn tại mã rạp
+    if (!checkMaRap) {
+      failCode(res, "", "Mã rạp không tồn tại!")
+    } else if (!checkMaPhim) {
+      failCode(res, "", "Mã phim không tồn tại!")
+    } else if (!checkDate) {
+      failCode(res, "", "Ngày chiếu đinh dạng DD/MM/YYYY !")
+    } else if (!checkHour) {
+      failCode(res, "", "Giờ chiếu định dạng hh:mm:ss !")
     } else {
-      failCode(res, "", "Mã Rạp không tồn tại!")
+      let dateConverted = convertDate(ngay_chieu)
+      console.log("dateConverted", dateConverted);
+      let ngay_gio_chieu = `${dateConverted}T${gio_chieu}.000Z`;
+
+      let checkDateTimeDuplicate = await model.LichChieu.findAll({
+        where: {
+          ngay_gio_chieu,
+        },
+      })
+      if (checkDateTimeDuplicate[0]) {
+        failCode(res, "", "Ngày giờ chiếu đã tồn tại!")
+      } else {
+        let newMovieSchedule = await model.LichChieu.create({
+          ma_rap,
+          ma_phim,
+          ngay_gio_chieu,
+          gia_ve
+        })
+        successCode(res, newMovieSchedule)
+      }
     }
-    res.send("oki create")
   } catch (error) {
     console.log(error)
     errorCode(res)
