@@ -9,6 +9,7 @@ class Banner extends Sequelize.Model {
     ma_phim: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      onDelete: "CASCADE",
       references: {
         model: 'Phim',
         key: 'ma_phim'

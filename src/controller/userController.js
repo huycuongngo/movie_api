@@ -1,10 +1,10 @@
 const { successCode, failCode, errorCode, emailError } = require('../utils/response');
-const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const sequelize = require('../model/modelConnectDb');
 const initModel = require('../model/init-models');
 const { encodeToken, decodeToken } = require('../middleware/auth');
-
+const { validateEmail } = require('../utils/validate')
+const { paginate } = require('../utils/involveObject')
 const model = initModel(sequelize);
 let signUpAccountList = [];
 
@@ -16,8 +16,7 @@ const getUserType = async (req, res) => {
     let uniqueTypeList = [...new Map(typeList.map(item => [item['loai_nguoi_dung'], item])).values()]
     successCode(res, uniqueTypeList)
   } catch (error) {
-    console.log(error)
-    errorCode(res);
+    errorCode(res), error;
   }
 }
 
@@ -26,8 +25,7 @@ const getUserList = async (req, res) => {
     let userList = await model.NguoiDung.findAll();
     successCode(res, userList);
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
@@ -36,13 +34,12 @@ const getUserListPagination = async (req, res) => {
     let { currentPageId, pageSize } = req.body;
     let userList = await model.NguoiDung.findAll()
     let totalCount = userList.length
-    let totalPages = Math.ceil(totalCount/pageSize)
+    let totalPages = Math.ceil(totalCount / pageSize)
     let result = await model.NguoiDung.findAll({ offset: currentPageId * pageSize - pageSize, limit: pageSize })
     let count = result.length
     successCode(res, { currentPageId, count, totalPages, totalCount, result });
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
@@ -56,8 +53,30 @@ const getUserById = async (req, res) => {
       failCode(res, checkUser, "Tài khoản không tồn tại!")
     }
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
+  }
+}
+
+const searchUserPagination = async (req, res) => {
+  try {
+    let { ho_ten } = req.body
+    let { currentPageId, pageSize } = req.body;
+    let userList = await model.NguoiDung.findAll({
+      where: {
+        ho_ten,
+      }
+    })
+    if (userList[0]) {
+      let totalCount = userList.length
+      let totalPages = Math.ceil(totalCount / pageSize)
+      let result = paginate(userList, pageSize, currentPageId)
+      let count = result.length
+      successCode(res, { currentPageId, count, totalPages, totalCount, result });
+    } else {
+      failCode(res, "", `Không tồn tại người dùng có họ tên ${ho_ten} `)
+    }
+  } catch (error) {
+    errorCode(res, error)
   }
 }
 
@@ -66,48 +85,84 @@ const getUserById = async (req, res) => {
 const logIn = async (req, res) => {
   try {
     let { email, mat_khau } = req.body;
-    let checkUser = signUpAccountList.find(item => item.email === email)
-    if (checkUser) {
-      if (mat_khau === checkUser.mat_khau) {
-        let token = encodeToken(checkUser)
-        successCode(res, { ...checkUser, "accessToken": token })
-      } else {
-        failCode(res, "", "Mật khẩu không đúng!")
+    let checkUserInDb = await model.NguoiDung.findAll({
+      where: {
+        email,
+        mat_khau
       }
+    })
+    let checkEmailInDb = await model.NguoiDung.findAll({
+      where: {
+        email
+      }
+    })
+    let checkEmail = signUpAccountList.find(item => item.email === email)
+    if (!validateEmail(email)) {
+      failCode(res, "", "Email không hợp lệ")
+    } else if (checkUserInDb[0]) {
+      let token = encodeToken(checkUserInDb[0].dataValues)
+      successCode(res, { ...checkUserInDb[0].dataValues, "accessToken": token })
+    } else if (checkEmailInDb[0]) {
+      failCode(res, "", "Email đã tồn tại!")
+    } else if (!checkEmail) {
+      failCode(res, checkEmail, "Email chưa được đăng ký!")
+    } else if (checkEmail?.mat_khau !== mat_khau) {
+      failCode(res, "", "Không đúng mật khẩu đăng ký!")
     } else {
-      failCode(res, checkUser, "Email chưa được đăng ký!")
+      let token = encodeToken(checkEmail)
+      successCode(res, { ...checkEmail, "accessToken": token })
     }
   } catch (error) {
-    console.log(error)
-    emailError(res, error)
+    errorCode(res, error)
   }
 }
+
 
 const signUp = async (req, res) => {
   try {
     let { ho_ten, email, so_dt, mat_khau } = req.body;
-    let checkEmail = signUpAccountList.find(item => item.email === email)
-    if (checkEmail) failCode(res, "", "Email đã được đăng ký!")
-    else {
-      let formSignUp = {
-        tai_khoan: 0,
-        ho_ten,
-        email,
-        so_dt,
-        mat_khau,
-        loai_nguoi_dung: "KhachHang"
+
+    let checkEmailInDb = await model.NguoiDung.findAll({
+      where: {
+        email
       }
-      signUpAccountList.push(formSignUp)
-      console.log(signUpAccountList)
-      res.status(200).json({
-        statusCode: '200',
-        message: 'Đăng ký thành công!',
-        content: formSignUp,
-      })
+    })
+
+    let checkPhoneInDb = await model.NguoiDung.findAll({
+      where: {
+        so_dt,
+      }
+    })
+    if (!validateEmail(email)) {
+      failCode(res, "", "Email không hợp lệ!")
+    } else if (checkEmailInDb[0]) {
+      failCode(res, "", "Email đã tồn tại!")
+    } else if (checkPhoneInDb[0]) {
+      failCode(res, "", "Số điện thoại đã tồn tại!")
+    } else {
+      let checkEmail = signUpAccountList.find(item => item.email === email)
+      let checkPhone = signUpAccountList.find(item => item.so_dt === so_dt)
+      // nếu cả 2 undefined, có nghĩa là chưa được thêm vô bảng tạm thời
+      if (!checkEmail && !checkPhone) {
+        let formSignUp = {
+          ho_ten,
+          email,
+          so_dt,
+          mat_khau,
+          loai_nguoi_dung: "KhachHang"
+        }
+        signUpAccountList.push(formSignUp)
+        successCode(res, signUpAccountList)
+      } else if (!checkEmail && checkPhone) {                          //thay đổi email, và giữ nguyên sdt
+        failCode(res, signUpAccountList, "Số điện thoại vừa được đăng ký!")
+      } else if (checkEmail && !checkPhone) {                          //giữ nguyên email, và thay đổi sdt
+        failCode(res, signUpAccountList, "Email vừa được đăng ký!")
+      } else {
+        failCode(res, signUpAccountList, "Email và số điện thoại vừa được đăng ký!")
+      }
     }
   } catch (error) {
-    console.log(error)
-    emailError(res, error)
+    errorCode(res, error)
   }
 }
 
@@ -116,180 +171,231 @@ const getAccountInfo = async (req, res) => {
     let bearerToken = req.headers.authorization;
     let auth = bearerToken.replace("Bearer ", "");
     let { data } = decodeToken(auth);
-    let { tai_khoan } = data;
-    let nguoiDungDatVe = await model.NguoiDung.findAll({
-      include: "DatVes"
-    });
-    let index = nguoiDungDatVe.findIndex(item => item.tai_khoan === tai_khoan)
-    successCode(res, nguoiDungDatVe[index])
+    successCode(res, data)
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
 const getUserInfo = async (req, res) => {
   try {
-    let bearerToken = req.headers.authorization;
-    let auth = bearerToken.replace("Bearer ", "");
-    let { data } = decodeToken(auth);
-    let { tai_khoan } = data;
-    let datve = await model.NguoiDung.findAll({
-      include: [{
-        model: model.DatVe,
-        as: "DatVes",
-        include: [
-          {
-            model: model.LichChieu,
-            as: "ma_lich_chieu_LichChieu",
-            include: [
-              {
-                model: model.Phim,
-                as: "ma_phim_Phim"
-              },
-              {
-                model: model.RapPhim,
-                as: "ma_rap_RapPhim",
-                include: [
-                  {
-                    model: model.CumRap,
-                    as: "ma_cum_rap_CumRap",
-                    include: [
-                      {
-                        model: model.HeThongRap,
-                        as: "ma_he_thong_rap_HeThongRap"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            model: model.Ghe,
-            as: "Ghes"
-          }
-        ]
-      }]
-    });
-    let index = datve.findIndex(item => item.tai_khoan === tai_khoan)
-    successCode(res, datve[index])
+    let { id } = req.params;
+    let checkUser = await model.NguoiDung.findByPk(id)
+    if (checkUser) {
+      let user = await model.NguoiDung.findAll({
+        where: {
+          tai_khoan: id
+        },
+        include: [{
+          model: model.DatVe,
+          as: "DatVes",
+          include: [
+            {
+              model: model.LichChieu,
+              as: "ma_lich_chieu_LichChieu",
+              include: [
+                {
+                  model: model.Phim,
+                  as: "ma_phim_Phim"
+                },
+                {
+                  model: model.RapPhim,
+                  as: "ma_rap_RapPhim",
+                  include: [
+                    {
+                      model: model.CumRap,
+                      as: "ma_cum_rap_CumRap",
+                      include: [
+                        {
+                          model: model.HeThongRap,
+                          as: "ma_he_thong_rap_HeThongRap"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              model: model.Ghe,
+              as: "Ghes"
+            }
+          ]
+        }]
+      });
+      successCode(res, user)
+    } else {
+      failCode(res, "", "User không tồn tại!")
+    }
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
-// do admin quản lý ở phần admin của trang, còn api này là nhằm để client dùng ở phần client của trang
 const addUser = async (req, res) => {
   try {
-    let bearerToken = req.headers.authorization;
-    let auth = bearerToken.replace("Bearer ", "");
-    let { data } = decodeToken(auth);
-    let { ho_ten, email, so_dt, mat_khau, loai_nguoi_dung } = req.body
-    let user = {
-      tai_khoan: 0,
-      ho_ten,
-      email,
-      so_dt,
-      mat_khau,
-      loai_nguoi_dung,
-    }
-    let checkDataInput = _.isEqual(data, user);
-    if (checkDataInput) {
-      let checkUser = await model.NguoiDung.findAll({
-        where: {
-          email,
-          so_dt,
-        },
-      })
-      if (checkUser[0]) {
-        failCode(res, "", "Người dùng đã tồn tại!")
-        return;
-      } else {
-        let result = await model.NguoiDung.create(user);
-        console.log(result)
-        let userTokenInDatabase = encodeToken(result)
-        successCode(res, { ...result.dataValues, userTokenInDatabase })
+    let { ho_ten, email, so_dt, mat_khau } = req.body
+    let checkName = signUpAccountList.find(item => item.ho_ten === ho_ten)
+
+    let checkEmailInDb = await model.NguoiDung.findAll({
+      where: {
+        email
       }
+    })
+    let checkPhoneInDb = await model.NguoiDung.findAll({
+      where: {
+        so_dt,
+      }
+    })
+    if (!validateEmail(email)) {
+      failCode(res, "", "Email không hợp lệ")
+    } else if (checkEmailInDb[0]) {
+      failCode(res, "", "Email đã tồn tại!")
+    } else if (checkPhoneInDb[0]) {
+      failCode(res, "", "Số điện thoại đã tồn tại!")
+    } else if (!checkName) {
+      failCode(res, "", "Sai họ tên đăng ký!")
+    } else if (checkName.email !== email) {
+      failCode(res, "", "Sai email đăng ký!")
+    } else if (checkName.so_dt !== so_dt) {
+      failCode(res, "", "Sai số điện thoại đăng ký!")
+    } else if (checkName.mat_khau !== mat_khau) {
+      failCode(res, "", "Sai mật khẩu đăng ký!")
     } else {
-      failCode(res, checkDataInput, "Sai thông tin đăng nhập!")
+      let newUser = {
+        tai_khoan: 0,
+        ho_ten,
+        email,
+        so_dt,
+        mat_khau,
+        loai_nguoi_dung: "KhachHang",
+      }
+      let result = await model.NguoiDung.create(newUser);
+      successCode(res, result)
     }
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
-// PUT, token bearer lấy từ addUser để xác định tài khoản nào cần update trong db
+
+// PUT
 const updateUserInfo = async (req, res) => {
   try {
-    let bearerToken = req.headers.authorization;
-    let auth = bearerToken.replace("Bearer ", "");
-    let { data } = decodeToken(auth);
-    let { tai_khoan } = data;
-    let { ho_ten, email, so_dt, mat_khau, loai_nguoi_dung } = req.body
-    let userUpdate = {
-      tai_khoan,
-      ho_ten,
-      email,
-      so_dt,
-      mat_khau,
-      loai_nguoi_dung,
-    }
-    let checkEmailUser = await model.NguoiDung.findAll({
+    let { id } = req.params
+    let { ho_ten, email, so_dt, mat_khau } = req.body
+    let checkUser = await model.NguoiDung.findByPk(id)
+    
+
+    // giữ nguyên email và so_dt của chính nó
+    let checkEmailAndPhone = await model.NguoiDung.findAll({
+      where: {
+        tai_khoan: id,
+        email,
+        so_dt
+      }
+    })
+
+    // nếu thay đổi email và giữ nguyên so_dt thì kiểm tra email này có trùng trong db và trùng đăng ký
+    // nếu email ko trùng db hoặc trùng đăng ký thì cho cập nhật
+    let checkEmailInDbItself = await model.NguoiDung.findAll({
+      where: {
+        tai_khoan: id,
+        email
+      }
+    })
+
+    let checkEmailInDb = await model.NguoiDung.findAll({
       where: {
         email,
-      },
-    })
-    if (checkEmailUser[0]) {
-      failCode(res, "", `Email đã bị trùng!`)
-    } else {
-      let checkSDTUser = await model.NguoiDung.findAll({
-        where: {
-          so_dt,
-        },
-      })
-      if (checkSDTUser[0]) {
-        failCode(res, "", `SDT đã bị trùng!`)
-      } else {
-          await model.NguoiDung.update(userUpdate, {where: {tai_khoan}})
-          successCode(res, userUpdate)
       }
+    })
+
+
+    // nếu giữ nguyên email và thay đổi so_dt thì kiểm tra so_dt này có trùng trong db và trùng đăng ký
+    // nếu so_dt không trùng db hoặc trùng đăng ký thì cho cập nhật
+    let checkPhoneInDb = await model.NguoiDung.findAll({
+      where: {
+        so_dt
+      }
+    })
+
+
+    let checkEmail = signUpAccountList.find(item => item.email === email)
+    let checkPhone = signUpAccountList.find(item => item.so_dt === so_dt)
+
+    if (!checkUser) {
+      failCode(res, "", "User không tồn tại!")
+    } else if (!validateEmail(email)) {
+      failCode(res, "", "Email không hợp lệ")
+    } else if (checkEmailAndPhone[0]) { 
+      await model.NguoiDung.update(
+        {
+          ho_ten,
+          email,
+          so_dt,
+          mat_khau
+        },
+        { where: { tai_khoan: id } })
+      let result = await model.NguoiDung.findByPk(id)
+      successCode(res, result)
+    } else if (!checkEmailInDbItself[0] && checkEmailInDb[0]) {
+      failCode(res, "", "Email đã tồn tại!")
+    } else if (checkEmail) {
+      failCode(res, "", "Email đã được đăng ký!")
+    } else if (!checkEmailInDb[0] && !checkEmail && checkPhoneInDb[0]) { // nếu thay đổi email và giữ nguyên so_dt thì kiểm tra email này có trùng trong db và trùng đăng ký, nếu email ko trùng db hoặc trùng đăng ký thì cho cập nhật
+      await model.NguoiDung.update(
+        {
+          ho_ten,
+          email,
+          so_dt,
+          mat_khau
+        },
+        { where: { tai_khoan: id } })
+      let result = await model.NguoiDung.findByPk(id)
+      successCode(res, result)
+    }
+    else if (checkPhoneInDb[0]) {
+      failCode(res, "", "Số điện thoại đã tồn tại!")
+    } else if (checkPhone) {
+      failCode(res, "", `Số điện thoại đã được đăng ký!`)
+    } else {
+      await model.NguoiDung.update(
+        {
+          ho_ten,
+          email,
+          so_dt,
+          mat_khau
+        },
+        { where: { tai_khoan: id } })
+      let result = await model.NguoiDung.findByPk(id)
+      successCode(res, result)
     }
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
 // DELETE
 const deleteUser = async (req, res) => {
   try {
-    let bearerToken = req.headers.authorization;
-    let auth = bearerToken.replace("Bearer ", "");
-    let { data } = decodeToken(auth);
-    console.log("xacthucbearer delete user", data);
-    let { tai_khoan } = data;
-    let checkUser = await model.NguoiDung.findAll({
-      where: {
-        tai_khoan
-      }
-    })
-    if (checkUser[0]) {
-      let result = await model.NguoiDung.destroy({
-        where: {
-          tai_khoan
+    let { id } = req.params
+    let checkUser = await model.NguoiDung.findByPk(id)
+    if (checkUser) {
+      let result = await model.NguoiDung.destroy(
+        {
+          where: {
+            tai_khoan: id
+          },
         }
-      })
+      )
       successCode(res, result)
     } else {
       failCode(res, "", "Xóa thất bại! Người dùng không tồn tại")
     }
 
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
@@ -298,11 +404,15 @@ module.exports = {
   getUserList,
   getUserListPagination,
   getUserById,
+  searchUserPagination,
+
   logIn,
   signUp,
   getAccountInfo,
   getUserInfo,
   addUser,
+
   updateUserInfo,
+
   deleteUser
 }

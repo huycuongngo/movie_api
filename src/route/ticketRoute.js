@@ -4,7 +4,7 @@ const { getTicketList, purchaseTicket, createMovieSchedule } = require('../contr
 const { checkTokenInAPI } = require('../middleware/auth')
 
 // GET
-ticketRoute.get("/LayDanhSachPhongVe", getTicketList)
+ticketRoute.get("/LayDanhSachPhongVe/:id", getTicketList)
 
 // POST
 ticketRoute.post("/DatVe", checkTokenInAPI, purchaseTicket)

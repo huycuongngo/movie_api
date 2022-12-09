@@ -6,6 +6,7 @@ const {
   getUserList,
   getUserListPagination,
   getUserById,
+  searchUserPagination,
   logIn,
   signUp,
   getAccountInfo,
@@ -21,19 +22,20 @@ userRoute.get("/LayDanhSachLoaiNguoiDung", getUserType);
 userRoute.get("/LayDanhSachNguoiDung", getUserList)
 userRoute.get("/LayDanhSachNguoiDungPhanTrang", getUserListPagination)
 userRoute.get("/TimKiemNguoiDung/:id", getUserById)
+userRoute.get("/TimKiemNguoiDungPhanTrang", searchUserPagination)
 
 // POST
 userRoute.post("/DangNhap", logIn)
 userRoute.post("/DangKy", signUp)
-userRoute.post("/ThongTinTaiKhoan", checkTokenInAPI, getAccountInfo)
-userRoute.post("/LayThongTinNguoiDung", checkTokenInAPI, getUserInfo)
-userRoute.post("/ThemNguoiDung", checkTokenInAPI, addUser)
+userRoute.post("/ThongTinTaiKhoan", checkTokenInAPI, getAccountInfo)          //token admin or user
+userRoute.post("/LayThongTinNguoiDung/:id", checkTokenInAPI, getUserInfo)     //token admin or user
+userRoute.post("/ThemNguoiDung", checkTokenInAPI, addUser)                  //token admin
 
 // PUT
-userRoute.put("/CapNhatThongTinNguoiDung", checkTokenInAPI, updateUserInfo)
+userRoute.put("/CapNhatThongTinNguoiDung/:id", checkTokenInAPI, updateUserInfo)     //token user
 
 // DELETE
-userRoute.delete("/XoaNguoiDung", checkTokenInAPI, deleteUser)
+userRoute.delete("/XoaNguoiDung/:id", checkTokenInAPI, deleteUser)       //token admin
 
 module.exports = userRoute;
 

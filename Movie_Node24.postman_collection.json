@@ -1,0 +1,859 @@
+{
+	"info": {
+		"_postman_id": "33be92a0-69b7-4ff5-a40e-dbdc4e379741",
+		"name": "Movie_Node24",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21761389"
+	},
+	"item": [
+		{
+			"name": "Quản lý người dùng",
+			"item": [
+				{
+					"name": "Lấy danh sách loại người dùng",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/LayDanhSachLoaiNguoiDung",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"LayDanhSachLoaiNguoiDung"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách người dùng",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/LayDanhSachNguoiDung",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"LayDanhSachNguoiDung"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách người dùng phân trang",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPageId\":1,\r\n    \"pageSize\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/LayDanhSachNguoiDungPhanTrang",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"LayDanhSachNguoiDungPhanTrang"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tìm kiếm người dùng theo tài khoản",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/TimKiemNguoiDung/2",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"TimKiemNguoiDung",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tìm kiếm người dùng phân trang",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ho_ten\": \"a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/TimKiemNguoiDungPhanTrang",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"TimKiemNguoiDungPhanTrang"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Đăng nhập",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"1@gmail.com\",\r\n    \"mat_khau\":\"123a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/DangNhap",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"DangNhap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Đăng ký",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ho_ten\":\"a\",\r\n    \"email\":\"a7@gmail.com\",\r\n    \"so_dt\":\"07\",\r\n    \"mat_khau\":\"07\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/DangKy",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"DangKy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Thông tin tài khoản",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6MiwiaG9fdGVuIjoiRGFybGVuZSIsImVtYWlsIjoiTHlsYV9Lb2VscGluODZAeWFob28uY29tIiwic29fZHQiOiI0MzctMzM1LTc3MzIiLCJtYXRfa2hhdSI6IkxPdmhKR3JKOW0zcTNsVCIsImxvYWlfbmd1b2lfZHVuZyI6IktoYWNoSGFuZyJ9LCJpYXQiOjE2Njk0NjQzODUsImV4cCI6MTY3MDMyODM4NX0.dgNRqbEP7RUEqQEfJCGQ-QByfcBj_2JwbRc85LGgAw0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/ThongTinTaiKhoan",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"ThongTinTaiKhoan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy thông tin người dùng",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImhvX3RlbiI6ImEiLCJlbWFpbCI6ImEyQGdtYWlsLmNvbSIsInNvX2R0IjoiMDIiLCJtYXRfa2hhdSI6IjEyM2EiLCJsb2FpX25ndW9pX2R1bmciOiJLaGFjaEhhbmcifSwiaWF0IjoxNjcwMTQyOTkzLCJleHAiOjE2NzEwMDY5OTN9.RVe9AROB30SWGwTRUuyFhah6sZNBhimw4VHo0ltpxEM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/LayThongTinNguoiDung/3",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"LayThongTinNguoiDung",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Thêm người dùng",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6MCwiaG9fdGVuIjoiYSIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJzb19kdCI6IjA1NjYzNzczODMiLCJtYXRfa2hhdSI6IjEyM2EiLCJsb2FpX25ndW9pX2R1bmciOiJLaGFjaEhhbmcifSwiaWF0IjoxNjY5ODc5MDY2LCJleHAiOjE2NzA3NDMwNjZ9.T5szafm4gTXX9ggjeFJm9Fv1y32SsD_xaCpf_ByYvAM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ho_ten\": \"a\",\r\n  \"email\": \"a@gmail.com\",\r\n  \"so_dt\": \"0566377383\",\r\n  \"mat_khau\": \"123a\",\r\n  \"loai_nguoi_dung\":\"KhachHang\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/ThemNguoiDung",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"ThemNguoiDung"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật thông tin người dùng",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6OCwiaG9fdGVuIjoiYyIsImVtYWlsIjoiY0BnbWFpbC5jb20iLCJzb19kdCI6IjA1NjMyMzc3MzgzIiwibWF0X2toYXUiOiIxMjMiLCJsb2FpX25ndW9pX2R1bmciOiJLaGFjaEhhbmcifSwiaWF0IjoxNjY5NTk5MjM5LCJleHAiOjE2NzA0NjMyMzl9.PPr7ieqpGcFlKoZ0edFa25KcQG_QGSFEURpZLX2hyp0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"ho_ten\": \"q\",\r\n  \"email\": \"b@gmail.com\",\r\n  \"so_dt\": \"4\",\r\n  \"mat_khau\": \"123a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/CapNhatThongTinNguoiDung/7",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"CapNhatThongTinNguoiDung",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa người dùng",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6OCwiaG9fdGVuIjoiYyIsImVtYWlsIjoiY0BnbWFpbC5jb20iLCJzb19kdCI6IjA1NjMyMzc3MzgzIiwibWF0X2toYXUiOiIxMjMiLCJsb2FpX25ndW9pX2R1bmciOiJLaGFjaEhhbmcifSwiaWF0IjoxNjY5NTk5MjM5LCJleHAiOjE2NzA0NjMyMzl9.PPr7ieqpGcFlKoZ0edFa25KcQG_QGSFEURpZLX2hyp0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyNguoiDung/XoaNguoiDung/7",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyNguoiDung",
+								"XoaNguoiDung",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quản lý phim",
+			"item": [
+				{
+					"name": "Lấy danh sách banner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/LayDanhSachBanner",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"LayDanhSachBanner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách phim",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/LayDanhSachPhim",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"LayDanhSachPhim"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách phim phân trang",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPageId\": 1,\r\n    \"pageSize\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/LayDanhSachPhimPhanTrang",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"LayDanhSachPhimPhanTrang"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách phim phân trang theo ngày",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPageId\": 1,\r\n    \"pageSize\": 2,\r\n    \"startDate\": \"26/10/2022\",\r\n    \"endDate\": \"10/11/2022\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/LayDanhSachPhimTheoNgay",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"LayDanhSachPhimTheoNgay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy thông tin phim",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/LayThongTinPhim/5",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"LayThongTinPhim",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Thêm phim",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/Admin/Desktop/naruto.png"
+								},
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/C:/Users/Admin/Desktop/naruto.mp4"
+								},
+								{
+									"key": "ten_phim",
+									"value": "naruto",
+									"type": "text"
+								},
+								{
+									"key": "mo_ta",
+									"value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to mak",
+									"type": "text"
+								},
+								{
+									"key": "ngay_khoi_chieu",
+									"value": "10/11/2022",
+									"type": "text"
+								},
+								{
+									"key": "danh_gia",
+									"value": "9",
+									"type": "text"
+								},
+								{
+									"key": "hot",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "dang_chieu",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "sap_chieu",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/ThemPhim",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"ThemPhim"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật phim",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6OSwiaG9fdGVuIjoiYyIsImVtYWlsIjoiY0BnbWFpbC5jb20iLCJzb19kdCI6IjA1NjMyMzc3MzgzIiwibWF0X2toYXUiOiIxMjMiLCJsb2FpX25ndW9pX2R1bmciOiJLaGFjaEhhbmcifSwiaWF0IjoxNjY5NjAxODQ2LCJleHAiOjE2NzA0NjU4NDZ9.YTdrqQ2uGVXzH7ZdWtABFJLiXO_PyrcqY_A4azhyrlY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/Admin/Desktop/naruto.png"
+								},
+								{
+									"key": "video",
+									"type": "file",
+									"src": "/C:/Users/Admin/Desktop/naruto.mp4"
+								},
+								{
+									"key": "ten_phim",
+									"value": "naruto",
+									"type": "text"
+								},
+								{
+									"key": "mo_ ta",
+									"value": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to mak",
+									"type": "text"
+								},
+								{
+									"key": "ngay_khoi_chieu",
+									"value": "29/02/2021",
+									"type": "text"
+								},
+								{
+									"key": "danh_gia",
+									"value": "9",
+									"type": "text"
+								},
+								{
+									"key": "hot",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "dang_chieu",
+									"value": "false",
+									"type": "text"
+								},
+								{
+									"key": "sap_chieu",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/CapNhatPhim/7",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"CapNhatPhim",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa phim",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImhvX3RlbiI6ImEiLCJlbWFpbCI6IjFAZ21haWwuY29tIiwic29fZHQiOiIwMSIsIm1hdF9raGF1IjoiMTIzYSIsImxvYWlfbmd1b2lfZHVuZyI6IktoYWNoSGFuZyJ9LCJpYXQiOjE2NzAxNDkzMDYsImV4cCI6MTY3MTAxMzMwNn0.divAtV9IvTn7jNC7P0oqcOlHyrKGi83RlEvDErQnIrw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyPhim/XoaPhim/6",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyPhim",
+								"XoaPhim",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quản lý đặt vé",
+			"item": [
+				{
+					"name": "Lấy danh sách phòng vé",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyDatVe/LayDanhSachPhongVe/50",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyDatVe",
+								"LayDanhSachPhongVe",
+								"50"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Đặt vé",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhaV9raG9hbiI6MTAsImhvX3RlbiI6ImEiLCJlbWFpbCI6ImFAZ21haWwuY29tIiwic29fZHQiOiIwNTY2Mzc3MzgzIiwibWF0X2toYXUiOiIxMjNhIiwibG9haV9uZ3VvaV9kdW5nIjoiS2hhY2hIYW5nIn0sImlhdCI6MTY2OTg3OTE3MywiZXhwIjoxNjcwNzQzMTczfQ.ofFtIFdE_Ujq4svOmG5xLdR-cbS1qE4_rVdwUBPwjSg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tai_khoan\": 1,\r\n    \"ma_lich_chieu\": 1,\r\n    \"danh_sach_ghe\": [\r\n        49,50\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyDatVe/DatVe",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyDatVe",
+								"DatVe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo lịch chiếu",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImhvX3RlbiI6ImEiLCJlbWFpbCI6IjFAZ21haWwuY29tIiwic29fZHQiOiIwMSIsIm1hdF9raGF1IjoiMTIzYSIsImxvYWlfbmd1b2lfZHVuZyI6IktoYWNoSGFuZyJ9LCJpYXQiOjE2NzAxNDkzMDYsImV4cCI6MTY3MTAxMzMwNn0.divAtV9IvTn7jNC7P0oqcOlHyrKGi83RlEvDErQnIrw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ma_rap\": 1,\r\n    \"ma_phim\": 1,\r\n    \"ngay_chieu\": \"29/02/2021\",\r\n    \"gio_chieu\": \"10:10:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyDatVe/TaoLichChieu",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyDatVe",
+								"TaoLichChieu"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quản lý rạp",
+			"item": [
+				{
+					"name": "Lấy thông tin hệ thống rạp",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyRap/LayThongTinHeThongRap",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyRap",
+								"LayThongTinHeThongRap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy thông tin cụm rạp theo hệ thống",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyRap/LayThongTinCumRapTheoHeThong",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyRap",
+								"LayThongTinCumRapTheoHeThong"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy thông tin lịch chiếu theo hệ thống rạp",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/QuanLyRap/LayThongTinLichChieuHeThongRap",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyRap",
+								"LayThongTinLichChieuHeThongRap"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy thông tin lịch chiếu phim",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ma_phim\": 19\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{domain}}/api/QuanLyRap/LayThongTinLichChieuPhim",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"QuanLyRap",
+								"LayThongTinLichChieuPhim"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
