@@ -5,6 +5,8 @@ const initModel = require('../model/init-models');
 const { encodeToken, decodeToken } = require('../middleware/auth');
 const { validateEmail } = require('../utils/validate')
 const { paginate } = require('../utils/involveObject')
+const { Op } = require('sequelize')
+
 const model = initModel(sequelize);
 let signUpAccountList = [];
 
@@ -63,7 +65,9 @@ const searchUserPagination = async (req, res) => {
     let { currentPageId, pageSize } = req.body;
     let userList = await model.NguoiDung.findAll({
       where: {
-        ho_ten,
+        ho_ten: {
+          [Op.like]: `%${ho_ten}%`
+        }
       }
     })
     if (userList[0]) {
@@ -73,7 +77,7 @@ const searchUserPagination = async (req, res) => {
       let count = result.length
       successCode(res, { currentPageId, count, totalPages, totalCount, result });
     } else {
-      failCode(res, "", `Không tồn tại người dùng có họ tên ${ho_ten} `)
+      failCode(res, "", `Không tồn tại người dùng có họ tên chứa ký tự ${ho_ten} `)
     }
   } catch (error) {
     errorCode(res, error)
@@ -285,7 +289,7 @@ const updateUserInfo = async (req, res) => {
     let { id } = req.params
     let { ho_ten, email, so_dt, mat_khau } = req.body
     let checkUser = await model.NguoiDung.findByPk(id)
-    
+
 
     // giữ nguyên email và so_dt của chính nó
     let checkEmailAndPhone = await model.NguoiDung.findAll({
@@ -328,7 +332,7 @@ const updateUserInfo = async (req, res) => {
       failCode(res, "", "User không tồn tại!")
     } else if (!validateEmail(email)) {
       failCode(res, "", "Email không hợp lệ")
-    } else if (checkEmailAndPhone[0]) { 
+    } else if (checkEmailAndPhone[0]) {
       await model.NguoiDung.update(
         {
           ho_ten,
