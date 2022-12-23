@@ -13,6 +13,7 @@ const {
   addMovie,
 
   updateMovie,
+  updateMovieVideo,
 
   deleteMovie,
 } = require('../controller/movieController')
@@ -25,10 +26,11 @@ movieRoute.get("/LayDanhSachPhimTheoNgay", getMovieListDate)
 movieRoute.get("/LayThongTinPhim/:maPhim", getMovie)
 
 // POST
-movieRoute.post("/ThemPhim", upload, addMovie)
+movieRoute.post("/ThemPhim", upload.single("image"), addMovie)
 
 // PUT
-movieRoute.put("/CapNhatPhim/:ma_phim", checkTokenInAPI, upload, updateMovie)
+movieRoute.put("/CapNhatPhim/:ma_phim", checkTokenInAPI, upload.single("image"), updateMovie)
+movieRoute.put("/CapNhatPhimUploadVideo/:ma_phim", checkTokenInAPI, upload.single("video"), updateMovieVideo)
 
 // DELETE
 movieRoute.delete("/XoaPhim/:ma_phim",checkTokenInAPI, deleteMovie)

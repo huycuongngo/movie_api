@@ -12,4 +12,4 @@ app.listen(port, () => {
 })
 
 
-// sequelize-auto -h localhost -d movie -u root -x 1234 -p 3307 --dialect mysql -o "./src/model" -l es6
+// yarn sequelize-auto -h localhost -d movie -u root -x 1234 -p 3307 --dialect mysql -o "./src/model" -l es6

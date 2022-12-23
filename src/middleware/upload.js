@@ -1,42 +1,28 @@
 const multer = require('multer');
+const fs = require('fs')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.fieldname === "image")
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/gif')
       cb(null, './public/img')
-    else
+    else if (file.mimetype === 'video/mp4')
       cb(null, './public/video')
+    else
+      cb(null, './public/other')
   },
-  filename: (req, file, cb) => {
-    const newFileName = Date.now() + '_' + file.originalname
-    cb(null, newFileName)
+  filename: async (req, file, cb) => {
+    const fileName = Date.now() + "_" + file.originalname;
+    await cb(null, fileName)
+    const path = `public/other/${fileName}`;
+    if (fs.existsSync(path)) {
+      fs.unlink(path, (err) => {
+        if (err) console.error(err)
+      })
+    }
   }
 })
-
-const fileFilter = (req, file, cb) => {
-  if (file.fieldname === "image") {
-    if (
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/gif'
-    ) {
-      cb(null, true);
-    } else {
-      cb(null, false);
-    }
-  } else {
-    if (file.mimetype === 'video/mp4')
-      cb(null, true)
-    else
-      cb(null, false)
-  }
-};
-
-const upload = multer({ storage, fileFilter }).fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'video', maxCount: 1 },
-])
+const upload = multer({ storage })
 
 module.exports = {
-  upload,
-};
+  upload
+}

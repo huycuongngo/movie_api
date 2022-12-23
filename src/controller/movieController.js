@@ -4,7 +4,7 @@ const sequelize = require('../model/modelConnectDb');
 const initModel = require('../model/init-models');
 const { validateDate, convertDate } = require('../utils/validate');
 const { paginate } = require('../utils/involveObject');
-const { upload } = require('../middleware/upload');
+const fs = require('fs')
 
 const model = initModel(sequelize);
 
@@ -85,6 +85,9 @@ const getMovie = async (req, res) => {
 }
 
 // POST
+//kiem tra dinh dang file image
+//kiem tra ten phim co bi trung
+//kiem tra dinh dang ngay
 const addMovie = async (req, res) => {
   try {
     let { ten_phim, mo_ta, ngay_khoi_chieu, danh_gia, hot, dang_chieu, sap_chieu } = req.body
@@ -94,43 +97,65 @@ const addMovie = async (req, res) => {
         ten_phim: filmName
       }
     })
-    let checkImage = req.files.image;
-    let checkVideo = req.files.video;
+    let checkImage = (req.file?.mimetype === 'image/png' || req.file?.mimetype === 'image/jpg' || req.file?.mimetype === 'image/gif')
+    let checkVideo = req.file?.mimetype === 'video/mp4'
     let checkDate = validateDate(ngay_khoi_chieu)
-    if (checkTenPhim[0]) {
-      failCode(res, "", "Tên phim đã tồn tại!")
-    } else if (!checkImage) {
+
+    if (!checkImage) {
       failCode(res, "", "Hình ảnh định dạng *.jpg, *.png, *.gif !")
-    } else if (!checkVideo) {
-      failCode(res, "", "Video định dạng *.mp4")
-    } else if (!checkDate) {
-      failCode(res, "", "Ngày không hợp lệ! Nhập ngày định dạng DD/MM/YYYY")
-    } else {
-      let trailer = req.files.video[0].path
-      let hinh_anh = req.files.image[0].path
-      let dateConverted = convertDate(ngay_khoi_chieu);
-      let newMovie = {
-        ma_phim: 0,
-        ten_phim,
-        trailer,
-        hinh_anh,
-        mo_ta,
-        ngay_khoi_chieu: dateConverted,
-        danh_gia,
-        hot,
-        dang_chieu,
-        sap_chieu
+      if (checkVideo) {
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
       }
-      let result = await model.Phim.create(newMovie);
-      successCode(res, result)
+    } else {
+      if (checkTenPhim[0]) {
+        failCode(res, "", "Tên phim đã tồn tại!")
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
+      } else {
+        if (!checkDate) {
+          failCode(res, "", "Ngày không hợp lệ! Nhập ngày định dạng DD/MM/YYYY")
+          fs.unlink(req.file?.path, (err) => {
+            if (err) console.error(err)
+          })
+        } else {
+          let image = req.file
+          let dateConverted = convertDate(ngay_khoi_chieu);
+          await fs.readFile(image.path, async (err, data) => {
+            let fileImageBase64 = `data:${image.mimetype};base64,` + Buffer.from(data).toString("base64")
+            let newMovie = {
+              ma_phim: 0,
+              ten_phim,
+              trailer: null,
+              hinh_anh: fileImageBase64,
+              mo_ta,
+              ngay_khoi_chieu: dateConverted,
+              danh_gia,
+              hot,
+              dang_chieu,
+              sap_chieu
+            }
+            let result = await model.Phim.create(newMovie);
+            successCode(res, result)
+          })
+          fs.unlink(image.path, (err) => {
+            if (err) console.error(err)
+          })
+        }
+      }
     }
   } catch (error) {
-    console.log(error)
-    errorCode(res)
+    errorCode(res, error)
   }
 }
 
 // PUT
+//kiem tra dinh dang file image
+//kiem tra ma phim ton tai
+//kiem tra ten phim co bi trung
+//kiem tra dinh dang ngay
 const updateMovie = async (req, res) => {
   try {
     let { ma_phim } = req.params;
@@ -148,42 +173,114 @@ const updateMovie = async (req, res) => {
         ten_phim: filmName
       }
     })
-    let checkImage = req.files.image;
-    let checkVideo = req.files.video;
+    let checkImage = (req.file?.mimetype === 'image/png' || req.file?.mimetype === 'image/jpg' || req.file?.mimetype === 'image/gif')
+    let checkVideo = req.file?.mimetype === 'video/mp4'
     let checkDate = validateDate(ngay_khoi_chieu)
-    if (!checkMovie) {
-      failCode(res, "", "Mã phim không tồn tại!")
-    } else if (!checkTenPhimItself[0] && checkTenPhim[0]) { //nếu thay đổi tên phim và bị trùng với phim khác
-      failCode(res, "", "Tên phim đã tồn tại!")
-    } else if (!checkImage) {
+
+    if (!checkImage) {
       failCode(res, "", "Hình ảnh định dạng *.jpg, *.png, *.gif !")
-    } else if (!checkVideo) {
-      failCode(res, "", "Video định dạng *.mp4")
-    } else if (!checkDate) {
-      failCode(res, "", "Ngày không hợp lệ! Nhập ngày định dạng DD/MM/YYYY")
-    } else {
-      let trailer = req.files.video[0].path
-      let hinh_anh = req.files.image[0].path
-      let dateConverted = convertDate(ngay_khoi_chieu)
-      let updateMovie = {
-        ma_phim,
-        ten_phim,
-        trailer,
-        hinh_anh,
-        mo_ta,
-        ngay_khoi_chieu: dateConverted,
-        danh_gia,
-        hot,
-        dang_chieu,
-        sap_chieu
+      if (checkVideo) {
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
       }
-      await model.Phim.update(updateMovie, {
-        where: {
-          ma_phim
+    } else {
+      if (!checkMovie) {
+        failCode(res, "", "Mã phim không tồn tại!")
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
+      } else {
+        if (!checkTenPhimItself[0] && checkTenPhim[0]) {
+          failCode(res, "", "Tên phim đã tồn tại!")
+          fs.unlink(req.file?.path, (err) => {
+            if (err) console.error(err)
+          })
+        } else {
+          if (!checkDate) {
+            failCode(res, "", "Ngày không hợp lệ! Nhập ngày định dạng DD/MM/YYYY")
+            fs.unlink(req.file?.path, (err) => {
+              if (err) console.error(err)
+            })
+          } else {
+            let image = req.file
+            let dateConverted = convertDate(ngay_khoi_chieu);
+            await fs.readFile(image.path, async (err, data) => {
+              let fileImageBase64 = `data:${image.mimetype};base64,` + Buffer.from(data).toString("base64")
+              let movieUpdate = {
+                ma_phim,
+                ten_phim,
+                trailer: null,
+                hinh_anh: fileImageBase64,
+                mo_ta,
+                ngay_khoi_chieu: dateConverted,
+                danh_gia,
+                hot,
+                dang_chieu,
+                sap_chieu
+              }
+              await model.Phim.update(movieUpdate, {
+                where: {
+                  ma_phim
+                }
+              });
+              let result = await model.Phim.findByPk(ma_phim)
+              successCode(res, result)
+            })
+            fs.unlink(image.path, (err) => {
+              if (err) console.error(err)
+            })
+          }
         }
-      })
-      let result = await model.Phim.findByPk(ma_phim)
-      successCode(res, result)
+      }
+    }
+  } catch (error) {
+    errorCode(res, error)
+  }
+}
+
+
+//kiem tra dinh dang file video
+//kiem tra ma phim ton tai
+const updateMovieVideo = async (req, res) => {
+  try {
+    let { ma_phim } = req.params
+    let checkMaPhim = await model.Phim.findByPk(ma_phim)
+
+    let checkImage = (req.file?.mimetype === 'image/png' || req.file?.mimetype === 'image/jpg' || req.file?.mimetype === 'image/gif')
+    let checkVideo = req.file?.mimetype === 'video/mp4';
+
+    if (!checkVideo) {
+      failCode(res, "", "Video định dạng *.mp4 !")
+      if (checkImage) {
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
+      }
+    } else {
+      if (!checkMaPhim) {
+        failCode(res, "", "Mã phim không tồn tại!")
+        fs.unlink(req.file?.path, (err) => {
+          if (err) console.error(err)
+        })
+      } else {
+        let video = req.file
+        await fs.readFile(video.path, async (err, data) => {
+          let fileVideoBase64 = `data:${video.mimetype};base64,` + Buffer.from(data).toString("base64")
+          await model.Phim.update(
+            {
+              trailer: fileVideoBase64
+            },
+            {
+              where: { ma_phim }
+            }
+          )
+          successCode(res, fileVideoBase64)
+        })
+        fs.unlink(video.path, (err) => {
+          if (err) console.error(err)
+        })
+      }
     }
   } catch (error) {
     errorCode(res, error)
@@ -220,6 +317,7 @@ module.exports = {
   addMovie,
 
   updateMovie,
+  updateMovieVideo,
 
   deleteMovie,
 }

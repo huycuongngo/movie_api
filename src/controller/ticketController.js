@@ -2,7 +2,6 @@ const { successCode, failCode, errorCode } = require('../utils/response')
 const { Op } = require("sequelize");
 const sequelize = require('../model/modelConnectDb');
 const initModel = require('../model/init-models');
-const { decodeToken } = require('../middleware/auth');
 const { validateDate, convertDate, validateHour } = require('../utils/validate')
 
 const model = initModel(sequelize);
@@ -14,21 +13,33 @@ const getTicketList = async (req, res) => {
     let checkMaLichChieu = await model.LichChieu.findByPk(id)
     if (checkMaLichChieu) {
       let result = await model.Phim.findAll({
-        include: [{
-          model: model.LichChieu,
-          as: "LichChieus",
-          where: {
-            ma_lich_chieu: id
-          },
-          include: [{
-            model: model.DatVe,
-            as: "DatVes",
-            include: [{
-              model: model.Ghe,
-              as: "Ghes"
-            }]
+        include: [
+          {
+            model: model.LichChieu,
+            as: "LichChieus",
+            where: {
+              ma_lich_chieu: id
+            },
+            include: [
+              {
+                model: model.RapPhim,
+                as: "ma_rap_RapPhim",
+              },
+              {
+                model: model.DatVe,
+                as: "DatVes",
+                include: [
+                  {
+                    model: model.NguoiDung,
+                    as: "tai_khoan_NguoiDung"
+                  },
+                  {
+                    model: model.Ghe,
+                    as: "Ghes"
+                  }
+                ]
+              }]
           }]
-        }]
       })
       successCode(res, result)
     } else {
@@ -54,7 +65,7 @@ const purchaseTicket = async (req, res) => {
       failCode(res, "", "Tài khoản không tồn tại!")
     } else if (!checkLichChieu) {
       failCode(res, "", "Lịch chiếu không tồn tại")
-    }  else {
+    } else {
       let maRap = checkLichChieu.ma_rap
 
       // lấy KHOẢN mã ghế của rạp
@@ -84,7 +95,7 @@ const purchaseTicket = async (req, res) => {
 
       // nếu tất cả ghế đều thuộc
       else {
-        let purchasedTicketList = [];     
+        let purchasedTicketList = [];
         checkMaGheTrongRap.forEach(ghe => {
 
           // nếu ghế nào có "mã vé" khác null, chứng tỏ ghế đó đã được đặt trước
