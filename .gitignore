@@ -1,3 +1,4 @@
 node_modules
-nguoidung.js
+abc.js
+.env
 # Keep environment variables out of version control
